@@ -3,11 +3,14 @@ package br.com.viniciusmassari.gestao_vagas.modules.candidate.controllers;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import br.com.viniciusmassari.gestao_vagas.exceptions.JobNotFoundException;
 import br.com.viniciusmassari.gestao_vagas.exceptions.UserFoundException;
+import br.com.viniciusmassari.gestao_vagas.exceptions.UserNotFoundException;
 import br.com.viniciusmassari.gestao_vagas.modules.candidate.CandidateEntity;
 import br.com.viniciusmassari.gestao_vagas.modules.candidate.dto.CandidateProfileResponseDTO;
 import br.com.viniciusmassari.gestao_vagas.modules.candidate.dto.CreateCandidateDTO;
 import br.com.viniciusmassari.gestao_vagas.modules.candidate.dto.ListAllJobsByFilterResponseDTO;
+import br.com.viniciusmassari.gestao_vagas.modules.candidate.useCases.ApplyJobUseCase;
 import br.com.viniciusmassari.gestao_vagas.modules.candidate.useCases.CandidateProfileUseCase;
 import br.com.viniciusmassari.gestao_vagas.modules.candidate.useCases.CreateCandidateUseCase;
 import br.com.viniciusmassari.gestao_vagas.modules.candidate.useCases.ListAllJobsByFilterUseCase;
@@ -49,6 +52,9 @@ public class CandidateController {
 
     @Autowired
     private ListAllJobsByFilterUseCase listAllJobsByFilterUseCase;
+
+    @Autowired
+    private ApplyJobUseCase applyJobUseCase;
 
     @PostMapping("/")
     public ResponseEntity<Object> createCandidate(@Valid @RequestBody CreateCandidateDTO createCandidateDTO)
@@ -98,6 +104,26 @@ public class CandidateController {
     public ResponseEntity<List<ListAllJobsByFilterResponseDTO>> getJobsListByFilter(@RequestParam String filter) {
         var jobsList = this.listAllJobsByFilterUseCase.execute(filter);
         return ResponseEntity.ok().body(jobsList);
+    }
+
+    @Operation(summary = "Aplica o candidato à uma vaga de emprego")
+    @SecurityRequirement(name = "jwt_auth")
+    @PreAuthorize("hasRole('CANDIDATE')")
+    @PostMapping("/job/apply")
+    public ResponseEntity<Object> applyJob(HttpServletRequest request, @RequestBody UUID jobId) {
+        var candidateId = request.getAttribute("candidate_id").toString();
+        try {
+            applyJobUseCase.execute(UUID.fromString(candidateId), jobId);
+            return ResponseEntity.status(HttpStatus.CREATED).build();
+        } catch (JobNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        } catch (UserNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+
+        }
+
     }
 
 }

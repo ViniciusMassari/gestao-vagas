@@ -43,8 +43,6 @@ public class SecurityFilter extends OncePerRequestFilter {
                 var grants = roles.stream()
                         .map(role -> new SimpleGrantedAuthority("ROLE_" + role.toString().toUpperCase())).toList();
 
-                System.out.println(grants.toString());
-
                 UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(
                         token.getSubject(), null,
                         grants);
