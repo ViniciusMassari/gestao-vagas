@@ -3,18 +3,22 @@ package br.com.viniciusmassari.gestao_vagas.modules.candidate.controllers;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import br.com.viniciusmassari.gestao_vagas.exceptions.JobNotFoundException;
-import br.com.viniciusmassari.gestao_vagas.exceptions.UserFoundException;
-import br.com.viniciusmassari.gestao_vagas.exceptions.UserNotFoundException;
 import br.com.viniciusmassari.gestao_vagas.modules.candidate.CandidateEntity;
-import br.com.viniciusmassari.gestao_vagas.modules.candidate.dto.CandidateProfileResponseDTO;
-import br.com.viniciusmassari.gestao_vagas.modules.candidate.dto.CreateCandidateDTO;
-import br.com.viniciusmassari.gestao_vagas.modules.candidate.dto.ListAllJobsByFilterResponseDTO;
-import br.com.viniciusmassari.gestao_vagas.modules.candidate.useCases.ApplyJobUseCase;
+import br.com.viniciusmassari.gestao_vagas.modules.company.entities.JobEntity;
+
 import br.com.viniciusmassari.gestao_vagas.modules.candidate.useCases.CandidateProfileUseCase;
 import br.com.viniciusmassari.gestao_vagas.modules.candidate.useCases.CreateCandidateUseCase;
 import br.com.viniciusmassari.gestao_vagas.modules.candidate.useCases.ListAllJobsByFilterUseCase;
-import br.com.viniciusmassari.gestao_vagas.modules.company.entities.JobEntity;
+import br.com.viniciusmassari.gestao_vagas.modules.candidate.useCases.ApplyJobUseCase;
+
+import br.com.viniciusmassari.gestao_vagas.exceptions.JobNotFoundException;
+import br.com.viniciusmassari.gestao_vagas.exceptions.UserFoundException;
+import br.com.viniciusmassari.gestao_vagas.exceptions.UserNotFoundException;
+
+import br.com.viniciusmassari.gestao_vagas.modules.candidate.dto.CandidateProfileResponseDTO;
+import br.com.viniciusmassari.gestao_vagas.modules.candidate.dto.CreateCandidateDTO;
+import br.com.viniciusmassari.gestao_vagas.modules.candidate.dto.ListAllJobsByFilterResponseDTO;
+
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
