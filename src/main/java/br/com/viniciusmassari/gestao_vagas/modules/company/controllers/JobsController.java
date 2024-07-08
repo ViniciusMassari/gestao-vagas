@@ -11,8 +11,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import br.com.viniciusmassari.gestao_vagas.exceptions.CompanyNotFoundException;
 import br.com.viniciusmassari.gestao_vagas.modules.company.dto.CreateJobDTO;
-import br.com.viniciusmassari.gestao_vagas.modules.company.dto.CreateJobResponseDTO;
 import br.com.viniciusmassari.gestao_vagas.modules.company.entities.JobEntity;
 import br.com.viniciusmassari.gestao_vagas.modules.company.useCases.CreateJobUseCase;
 import io.swagger.v3.oas.annotations.Operation;
@@ -42,18 +42,26 @@ public class JobsController {
                                         @Content(schema = @Schema(implementation = JobEntity.class))
                         })
         })
-        public ResponseEntity<CreateJobResponseDTO> create(@Valid @RequestBody CreateJobDTO createJobDTO,
+        public ResponseEntity<Object> create(@Valid @RequestBody CreateJobDTO createJobDTO,
                         HttpServletRequest request) {
+                try {
 
-                var company_id = request.getAttribute("company_id").toString();
-                JobEntity jobEntity = JobEntity.builder()
-                                .benefits(createJobDTO.getBenefits())
-                                .description(createJobDTO.getDescription())
-                                .level(createJobDTO.getLevel())
-                                .companyId(UUID.fromString(company_id)).title(createJobDTO.getTitle())
-                                .build();
+                        var company_id = request.getAttribute("company_id").toString();
+                        JobEntity jobEntity = JobEntity.builder()
+                                        .benefits(createJobDTO.getBenefits())
+                                        .description(createJobDTO.getDescription())
+                                        .level(createJobDTO.getLevel())
+                                        .companyId(UUID.fromString(company_id)).title(createJobDTO.getTitle())
+                                        .build();
 
-                var response = createJobUseCase.execute(jobEntity);
-                return ResponseEntity.status(HttpStatus.CREATED).body(response);
+                        var response = createJobUseCase.execute(jobEntity);
+                        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+                } catch (CompanyNotFoundException e) {
+                        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+
+                } catch (Exception e) {
+                        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+
+                }
         }
 }
