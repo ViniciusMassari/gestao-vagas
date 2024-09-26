@@ -1,4 +1,4 @@
-package br.com.viniciusmassari.gestao_vagas.modules.candidate;
+package br.com.viniciusmassari.gestao_vagas.modules.candidate.entity;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -9,16 +9,10 @@ import org.hibernate.validator.constraints.Length;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.media.Schema.RequiredMode;
 import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
+import jakarta.persistence.*;
 import jakarta.persistence.Id;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Pattern;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import jakarta.validation.constraints.*;
+import lombok.*;
 
 @Data
 @Entity(name = "candidate")

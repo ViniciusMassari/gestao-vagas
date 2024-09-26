@@ -27,32 +27,29 @@ public class CandidateSecurityFilter extends OncePerRequestFilter {
             @NonNull HttpServletResponse response,
             @NonNull FilterChain filterChain)
             throws ServletException, IOException {
-        // SecurityContextHolder.getContext().setAuthentication(null);
         String header = request.getHeader("Authorization");
 
-        if (request.getRequestURI().startsWith("/candidate")) {
+        if (request.getRequestURI().startsWith("/candidate") && header != null) {
 
-            if (header != null) {
-                var token = this.jwtCandidateProvider.validateToken(header);
+            var token = this.jwtCandidateProvider.validateToken(header);
 
-                if (token == null) {
-                    response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-                    return;
-                }
-
-                request.setAttribute("candidate_id", token.getSubject());
-                var roles = token.getClaim("roles").asList(Object.class);
-
-                var grants = roles.stream()
-                        .map(role -> new SimpleGrantedAuthority("ROLE_" + role.toString().toUpperCase())).toList();
-
-                UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(token.getSubject(),
-                        null,
-                        grants);
-
-                SecurityContextHolder.getContext().setAuthentication(auth);
-
+            if (token == null) {
+                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                return;
             }
+
+            request.setAttribute("candidate_id", token.getSubject());
+            var roles = token.getClaim("roles").asList(Object.class);
+
+            var grants = roles.stream()
+                    .map(role -> new SimpleGrantedAuthority("ROLE_" + role.toString().toUpperCase())).toList();
+
+            UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(token.getSubject(),
+                    null,
+                    grants);
+
+            SecurityContextHolder.getContext().setAuthentication(auth);
+
         }
 
         filterChain.doFilter(request, response);

@@ -16,8 +16,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import br.com.viniciusmassari.gestao_vagas.exceptions.JobNotFoundException;
 import br.com.viniciusmassari.gestao_vagas.exceptions.UserNotFoundException;
-import br.com.viniciusmassari.gestao_vagas.modules.candidate.CandidateEntity;
 import br.com.viniciusmassari.gestao_vagas.modules.candidate.CandidateRepository;
+import br.com.viniciusmassari.gestao_vagas.modules.candidate.entity.CandidateEntity;
 import br.com.viniciusmassari.gestao_vagas.modules.candidate.repository.ApplyJobRepository;
 import br.com.viniciusmassari.gestao_vagas.modules.company.entities.JobEntity;
 import br.com.viniciusmassari.gestao_vagas.modules.company.repositories.JobRepository;
@@ -51,12 +51,13 @@ public class ApplyJobUseCaseTest {
     @Test
     @DisplayName("Should not be able to apply job with job not found ❌")
     public void should_not_be_able_to_apply_job_with_job_not_found() {
+        UUID randomJobUUID = UUID.randomUUID();
         UUID candidateId = UUID.randomUUID();
         CandidateEntity candidate = CandidateEntity.builder().id(candidateId).build();
         when(candidateRepository.findById(candidateId)).thenReturn(Optional.of(candidate));
 
         try {
-            applyJobUseCase.execute(candidateId, UUID.randomUUID());
+            applyJobUseCase.execute(candidateId, randomJobUUID);
 
         } catch (Exception e) {
             assertInstanceOf(JobNotFoundException.class, e);

@@ -1,46 +1,30 @@
 package br.com.viniciusmassari.gestao_vagas.modules.candidate.controllers;
 
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
-import br.com.viniciusmassari.gestao_vagas.modules.candidate.CandidateEntity;
 import br.com.viniciusmassari.gestao_vagas.modules.company.entities.JobEntity;
 
-import br.com.viniciusmassari.gestao_vagas.modules.candidate.useCases.CandidateProfileUseCase;
-import br.com.viniciusmassari.gestao_vagas.modules.candidate.useCases.CreateCandidateUseCase;
-import br.com.viniciusmassari.gestao_vagas.modules.candidate.useCases.ListAllJobsByFilterUseCase;
-import br.com.viniciusmassari.gestao_vagas.modules.candidate.useCases.ApplyJobUseCase;
+import br.com.viniciusmassari.gestao_vagas.modules.candidate.useCases.*;
 
-import br.com.viniciusmassari.gestao_vagas.exceptions.JobNotFoundException;
-import br.com.viniciusmassari.gestao_vagas.exceptions.UserFoundException;
-import br.com.viniciusmassari.gestao_vagas.exceptions.UserNotFoundException;
+import br.com.viniciusmassari.gestao_vagas.exceptions.*;
 
-import br.com.viniciusmassari.gestao_vagas.modules.candidate.dto.CandidateProfileResponseDTO;
-import br.com.viniciusmassari.gestao_vagas.modules.candidate.dto.CreateCandidateDTO;
-import br.com.viniciusmassari.gestao_vagas.modules.candidate.dto.ListAllJobsByFilterResponseDTO;
+import br.com.viniciusmassari.gestao_vagas.modules.candidate.dto.*;
+
+import br.com.viniciusmassari.gestao_vagas.modules.candidate.entity.CandidateEntity;
 
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.media.ArraySchema;
-import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.Schema;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.media.*;
+import io.swagger.v3.oas.annotations.responses.*;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
 
 @RestController
 @RequestMapping("/candidate")
@@ -79,12 +63,10 @@ public class CandidateController {
     @PreAuthorize("hasRole('CANDIDATE')")
     @Operation(summary = "Busca e retorna informações do perfil do usuário", method = "GET")
     @SecurityRequirement(name = "jwt_auth")
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", content = {
-                    @Content(schema = @Schema(implementation = CandidateProfileResponseDTO.class))
-            }),
-            @ApiResponse(responseCode = "400", description = "User not found")
+    @ApiResponse(responseCode = "200", content = {
+            @Content(schema = @Schema(implementation = CandidateProfileResponseDTO.class))
     })
+    @ApiResponse(responseCode = "400", description = "User not found")
     public ResponseEntity<Object> getUserProfile(HttpServletRequest request) {
         var candidateId = request.getAttribute("candidate_id").toString();
         try {
@@ -119,9 +101,7 @@ public class CandidateController {
         try {
             applyJobUseCase.execute(UUID.fromString(candidateId), jobId);
             return ResponseEntity.status(HttpStatus.CREATED).build();
-        } catch (JobNotFoundException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
-        } catch (UserNotFoundException e) {
+        } catch (JobNotFoundException | UserNotFoundException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());

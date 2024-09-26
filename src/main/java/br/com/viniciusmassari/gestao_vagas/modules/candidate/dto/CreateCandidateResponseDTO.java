@@ -2,12 +2,9 @@ package br.com.viniciusmassari.gestao_vagas.modules.candidate.dto;
 
 import java.util.UUID;
 
-import br.com.viniciusmassari.gestao_vagas.modules.candidate.CandidateEntity;
+import br.com.viniciusmassari.gestao_vagas.modules.candidate.entity.CandidateEntity;
 import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Data
 @AllArgsConstructor

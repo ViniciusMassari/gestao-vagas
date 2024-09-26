@@ -5,19 +5,10 @@ import java.util.UUID;
 
 import org.hibernate.annotations.CreationTimestamp;
 
-import br.com.viniciusmassari.gestao_vagas.modules.candidate.CandidateEntity;
 import br.com.viniciusmassari.gestao_vagas.modules.company.entities.JobEntity;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+
+import jakarta.persistence.*;
+import lombok.*;
 
 @Entity(name = "apply_jobs")
 @Data

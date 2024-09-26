@@ -25,7 +25,6 @@ public class JWTCandidateProvider {
             return subject;
 
         } catch (JWTVerificationException e) {
-            e.printStackTrace();
             return null;
 
         }
