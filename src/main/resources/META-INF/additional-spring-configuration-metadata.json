@@ -9,6 +9,11 @@
       "name": "security.token.secret.candidate",
       "type": "java.lang.String",
       "description": "A description for 'security.token.secret.candidate'"
+    },
+    {
+      "name": "token.sonnar",
+      "type": "java.lang.String",
+      "description": "token for sonnar"
     }
   ]
 }
