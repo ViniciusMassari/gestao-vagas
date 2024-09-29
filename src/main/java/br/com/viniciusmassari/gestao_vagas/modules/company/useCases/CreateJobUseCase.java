@@ -15,11 +15,11 @@ public class CreateJobUseCase {
     private JobRepository jobRepository;
 
     @Autowired
-    CompanyRepository companyRepository;
+    private CompanyRepository companyRepository;
 
     public CreateJobResponseDTO execute(JobEntity jobEntity) {
 
-        var company = companyRepository.findById(jobEntity.getCompanyId()).orElseThrow(() -> {
+        var company = this.companyRepository.findById(jobEntity.getCompanyId()).orElseThrow(() -> {
             throw new CompanyNotFoundException();
         });
 
