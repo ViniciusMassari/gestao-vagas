@@ -1,10 +1,13 @@
 package br.com.viniciusmassari.gestao_vagas.modules.candidate.useCases;
 
 import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.mockito.Mockito.when;
 
 import java.util.Optional;
+import java.util.UUID;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -20,6 +23,10 @@ import com.auth0.jwt.algorithms.Algorithm;
 import br.com.viniciusmassari.gestao_vagas.exceptions.UserNotFoundException;
 import br.com.viniciusmassari.gestao_vagas.modules.candidate.CandidateRepository;
 import br.com.viniciusmassari.gestao_vagas.modules.candidate.dto.AuthCandidateRequestDTO;
+import br.com.viniciusmassari.gestao_vagas.modules.candidate.dto.AuthCandidateResponseDTO;
+import br.com.viniciusmassari.gestao_vagas.modules.candidate.entity.CandidateEntity;
+import br.com.viniciusmassari.gestao_vagas.utils.TokenUtil;
+import br.com.viniciusmassari.gestao_vagas.utils.UserType;
 
 @RunWith(SpringRunner.class)
 @ActiveProfiles("test")
@@ -36,6 +43,9 @@ public class AuthCandidateUseCaseTest {
 
     @Mock
     private CandidateRepository candidateRepository;
+
+    @Mock
+    private TokenUtil tokenUtil;
 
     @Mock
     Algorithm algorithmMock;
@@ -55,6 +65,26 @@ public class AuthCandidateUseCaseTest {
     @Test
     public void assertNot() {
         assertNotNull(this.securityToken);
+    }
+
+    @Test
+    public void should_auth_candidate() {
+        String rawPassword = "123456";
+        CandidateEntity candidateEntity = CandidateEntity.builder().id(UUID.randomUUID()).username("username")
+                .password(UUID.randomUUID().toString()).build();
+        AuthCandidateRequestDTO authCandidateRequestDTO = new AuthCandidateRequestDTO(candidateEntity.getUsername(),
+                rawPassword);
+        when(candidateRepository.findByUsername(candidateEntity.getUsername()))
+                .thenReturn(Optional.of(candidateEntity));
+        when(passwordEncoder.matches(rawPassword, candidateEntity.getPassword())).thenReturn(true);
+
+        when(tokenUtil.createToken(candidateEntity.getId().toString(), UserType.CANDIDATE, "mysecret"))
+                .thenReturn("token");
+
+        assertDoesNotThrow(() -> {
+            var response = authCandidateUseCase.execute(authCandidateRequestDTO);
+            assertInstanceOf(AuthCandidateResponseDTO.class, response);
+        });
     }
 
 }
