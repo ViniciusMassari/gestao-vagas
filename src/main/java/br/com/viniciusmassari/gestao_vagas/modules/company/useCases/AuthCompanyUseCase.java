@@ -1,8 +1,5 @@
 package br.com.viniciusmassari.gestao_vagas.modules.company.useCases;
 
-import java.time.Instant;
-import java.util.Arrays;
-
 import javax.naming.AuthenticationException;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,13 +8,11 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import com.auth0.jwt.JWT;
-import com.auth0.jwt.algorithms.Algorithm;
-
 import br.com.viniciusmassari.gestao_vagas.modules.company.dto.AuthCompanyDTO;
 import br.com.viniciusmassari.gestao_vagas.modules.company.dto.AuthCompanyResponseDTO;
 import br.com.viniciusmassari.gestao_vagas.modules.company.repositories.CompanyRepository;
-import java.time.Duration;
+import br.com.viniciusmassari.gestao_vagas.utils.TokenUtil;
+import br.com.viniciusmassari.gestao_vagas.utils.UserType;
 
 @Service
 public class AuthCompanyUseCase {
@@ -27,6 +22,9 @@ public class AuthCompanyUseCase {
 
     @Value("${security.token.secret}")
     private String secretKey;
+
+    @Autowired
+    private TokenUtil tokenUtil;
 
     @Autowired
     private CompanyRepository companyRepository;
@@ -42,13 +40,9 @@ public class AuthCompanyUseCase {
         if (!isSamePassword)
             throw new AuthenticationException();
 
-        Algorithm algorithm = Algorithm.HMAC256(this.secretKey);
-        Instant expiresIn = Instant.now().plus(Duration.ofHours(2));
-        String token = JWT.create().withIssuer("javagas").withSubject(company.getId().toString())
-                .withClaim("roles", Arrays.asList("COMPANY"))
-                .withExpiresAt(expiresIn).sign(algorithm);
+        String token = tokenUtil.createToken(company.getId().toString(), UserType.COMPANY, secretKey);
 
-        return AuthCompanyResponseDTO.builder().access_token(token).expires_in(expiresIn.toEpochMilli()).build();
+        return AuthCompanyResponseDTO.builder().access_token(token).build();
     }
 
 }
