@@ -1,5 +1,7 @@
 package br.com.viniciusmassari.gestao_vagas.modules.candidate.useCases;
 
+import java.util.Arrays;
+
 import javax.security.sasl.AuthenticationException;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,11 +44,13 @@ public class AuthCandidateUseCase {
                 if (!isSamePassword) {
                         throw new AuthenticationException();
                 }
+                var roles = Arrays.asList(UserType.CANDIDATE.toString());
 
-                String token = tokenUtil.createToken(candidate.getId().toString(), UserType.CANDIDATE, secretKey);
+                String token = tokenUtil.createToken(candidate.getId().toString(), roles, secretKey);
 
                 AuthCandidateResponseDTO authCandidateResponseDTO = AuthCandidateResponseDTO.builder()
                                 .access_token(token)
+                                .roles(roles)
                                 .build();
 
                 return authCandidateResponseDTO;

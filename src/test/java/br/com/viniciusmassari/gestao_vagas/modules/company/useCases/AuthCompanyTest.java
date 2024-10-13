@@ -1,16 +1,16 @@
 package br.com.viniciusmassari.gestao_vagas.modules.company.useCases;
 
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-import static org.junit.jupiter.api.Assertions.assertInstanceOf;
-import static org.mockito.Mockito.when;
-
+import java.util.Arrays;
 import java.util.Optional;
 import java.util.UUID;
 
 import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import static org.mockito.Mockito.when;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.context.annotation.Description;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -21,7 +21,6 @@ import br.com.viniciusmassari.gestao_vagas.modules.company.dto.AuthCompanyRespon
 import br.com.viniciusmassari.gestao_vagas.modules.company.entities.CompanyEntity;
 import br.com.viniciusmassari.gestao_vagas.modules.company.repositories.CompanyRepository;
 import br.com.viniciusmassari.gestao_vagas.utils.TokenUtil;
-import br.com.viniciusmassari.gestao_vagas.utils.UserType;
 
 @RunWith(MockitoJUnitRunner.class)
 public class AuthCompanyTest {
@@ -60,7 +59,9 @@ public class AuthCompanyTest {
 
         when(companyRepository.findByUsername(authCompanyDTO.getUsername())).thenReturn(Optional.of(companyEntity));
         when(passwordEncoder.matches(rawPassword, companyEntity.getPassword())).thenReturn(true);
-        when(tokenUtil.createToken(companyEntity.getId().toString(), UserType.COMPANY, "mysecret")).thenReturn("token");
+
+        var roles = Arrays.asList("COMPANY");
+        when(tokenUtil.createToken(companyEntity.getId().toString(), roles, "mysecret")).thenReturn("token");
 
         assertDoesNotThrow(() -> {
             var response = authCompanyUseCase.execute(authCompanyDTO);

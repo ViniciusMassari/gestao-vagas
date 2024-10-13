@@ -1,5 +1,7 @@
 package br.com.viniciusmassari.gestao_vagas.modules.company.useCases;
 
+import java.util.Arrays;
+
 import javax.naming.AuthenticationException;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,9 +42,11 @@ public class AuthCompanyUseCase {
         if (!isSamePassword)
             throw new AuthenticationException();
 
-        String token = tokenUtil.createToken(company.getId().toString(), UserType.COMPANY, secretKey);
+        var roles = Arrays.asList(UserType.COMPANY.toString());
 
-        return AuthCompanyResponseDTO.builder().access_token(token).build();
+        String token = tokenUtil.createToken(company.getId().toString(), roles, secretKey);
+
+        return AuthCompanyResponseDTO.builder().access_token(token).roles(roles).build();
     }
 
 }
